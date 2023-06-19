@@ -29,11 +29,10 @@ import java.util.*;
 
 import jdk.crac.Context;
 import jdk.crac.impl.CheckpointOpenResourceException;
+import jdk.crac.impl.JDKResourcePolicies;
 import jdk.internal.access.JavaIOFileDescriptorAccess;
 import jdk.internal.access.SharedSecrets;
-import jdk.internal.crac.Core;
-import jdk.internal.crac.ClaimedFDs;
-import jdk.internal.crac.JDKFdResource;
+import jdk.internal.crac.*;
 import jdk.internal.ref.PhantomCleanable;
 
 /**
@@ -67,12 +66,20 @@ public final class FileDescriptor {
                 ClaimedFDs claimedFDs = Core.getClaimedFDs();
                 FileDescriptor self = FileDescriptor.this;
 
-                claimedFDs.claimFd(self, self, () ->  {
+                claimedFDs.claimFd(self, self, () -> {
                     if (self == in || self == out || self == err) {
                         return null;
                     }
+
+                    String nativeDescription = nativeDescription0();
+                    JDKResourcePolicies.FDPolicy policy = JDKResourcePolicies.FDPolicy.getPolicy(fd, nativeDescription);
+                    if (policy.getAction() == JDKResourcePolicies.FDPolicy.Action.IGNORE) {
+                        LoggerContainer.info(FileDescriptor.class.getSimpleName() + " " + fd + ": " + nativeDescription + "is ignored");
+                        return null;
+                    }
+
                     return new CheckpointOpenResourceException(
-                        FileDescriptor.class.getSimpleName() + " " + fd + ": " + nativeDescription0(),
+                        FileDescriptor.class.getSimpleName() + " " + fd + ": " + nativeDescription,
                         getStackTraceHolder());
                 });
             }

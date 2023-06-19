@@ -50,7 +50,7 @@ public class OpenFileDetectionTest implements CracTest {
 
     @Override
     public void exec() throws Exception {
-        try (var file1 = new RandomAccessFile("/etc/passwd", "r");
+        try (
              var file2 = new FileInputStream("/etc/group")) {
             Core.checkpointRestore();
         }

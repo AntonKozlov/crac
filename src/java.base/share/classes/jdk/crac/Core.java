@@ -33,6 +33,8 @@ import sun.security.action.GetBooleanAction;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -110,6 +112,12 @@ public class Core {
             CheckpointException,
             RestoreException {
         final ExceptionHolder<CheckpointException> checkpointException = new ExceptionHolder<>(CheckpointException::new);
+
+        try {
+            MethodHandles.lookup().ensureInitialized(JDKResourcePolicies.class);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         // FIXME: log something to complete logger initialization:
         // - call sites in logger formatters.
