@@ -29,7 +29,7 @@ import java.util.*;
 
 import jdk.crac.Context;
 import jdk.crac.impl.CheckpointOpenResourceException;
-import jdk.crac.impl.JDKResourcePolicies;
+import jdk.crac.impl.ResourcePolicies;
 import jdk.internal.access.JavaIOFileDescriptorAccess;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.crac.*;
@@ -72,8 +72,8 @@ public final class FileDescriptor {
                     }
 
                     String nativeDescription = nativeDescription0();
-                    JDKResourcePolicies.FDPolicy policy = JDKResourcePolicies.FDPolicy.getPolicy(fd, nativeDescription);
-                    if (policy.getAction() == JDKResourcePolicies.FDPolicy.Action.IGNORE) {
+                    ResourcePolicies.FD policy = ResourcePolicies.FD.getPolicy(fd, nativeDescription);
+                    if (policy.getAction() == ResourcePolicies.FD.Action.IGNORE) {
                         LoggerContainer.info(FileDescriptor.class.getSimpleName() + " " + fd + ": " + nativeDescription + "is ignored");
                         return null;
                     }

@@ -33,7 +33,6 @@ import sun.security.action.GetBooleanAction;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -114,7 +113,7 @@ public class Core {
         final ExceptionHolder<CheckpointException> checkpointException = new ExceptionHolder<>(CheckpointException::new);
 
         try {
-            MethodHandles.lookup().ensureInitialized(JDKResourcePolicies.class);
+            MethodHandles.lookup().ensureInitialized(ResourcePolicies.class);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
