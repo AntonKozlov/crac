@@ -32,6 +32,7 @@
 #include "runtime/interfaceSupport.inline.hpp"
 #include "runtime/jniHandles.hpp"
 #include "runtime/jniHandles.inline.hpp"
+#include "runtime/threads.hpp"
 #include "runtime/vm_version.hpp"
 #include "runtime/vmThread.hpp"
 #include "services/heapDumper.hpp"
@@ -280,7 +281,7 @@ bool VM_Crac::is_claimed_fd(int fd) {
 
 class WakeupClosure: public ThreadClosure {
   void do_thread(Thread* thread) {
-    JavaThread *jt = thread->as_Java_thread();
+    JavaThread *jt = JavaThread::cast(thread);
     jt->wakeup_sleep();
     jt->parker()->unpark();
     jt->_ParkEvent->unpark();
@@ -521,8 +522,8 @@ bool CracRestoreParameters::read_from(int fd) {
         cursor = value + strlen(value) + 1;
       }
     }
-    guarantee(result == JVMFlag::Error::SUCCESS, "VM Option '%s' cannot be changed: %s",
-        name, JVMFlag::flag_error_str(result));
+    guarantee(result == JVMFlag::Error::SUCCESS, "VM Option '%s' cannot be changed: %d",
+        name, result);
   }
 
   for (int i = 0; i < hdr->_nprops; i++) {
