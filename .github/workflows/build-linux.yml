@@ -141,23 +141,6 @@ jobs:
           platform: ${{ inputs.platform }}
           debug-suffix: '${{ matrix.suffix }}'
 
-      - name: Restore CRIU from cache
-        id: criu
-        uses: actions/cache@v3
-        with:
-          path: ~/criu/criu
-          key: criu-${{ runner.os }}-${{ env.CRIU_SHA256 }}
-
-      - name: Download CRIU
-        run: |
-          mkdir -p "${HOME}/criu"
-          wget -O "${HOME}/criu/${CRIU_FILENAME}" "${CRIU_URL}"
-          echo "${CRIU_SHA256} ${HOME}/criu/${CRIU_FILENAME}" | sha256sum -c >/dev/null -
-          tar -xf "${HOME}/criu/${CRIU_FILENAME}" -C "${HOME}/criu"
-          criu=`find $HOME/criu -type f -name criu`
-          mv ${criu} ${HOME}/criu/criu
-        if: steps.criu.outputs.cache-hit != 'true'
-
       - name: 'Upload bundles'
         uses: ./.github/actions/upload-bundles
         with:

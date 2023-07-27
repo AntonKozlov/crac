@@ -145,7 +145,7 @@ static bool compute_crengine() {
 
     struct stat st;
     if (0 != os::stat(path, &st)) {
-      warning("Could not find %s: %s", path, strerror(errno));
+      warning("Could not find %s: %s", path, os::strerror(errno));
       return false;
     }
     _crengine = os::strdup_check_oom(path);
@@ -361,11 +361,11 @@ bool crac::prepare_checkpoint() {
     }
   } else {
     if (-1 == os::mkdir(CRaCCheckpointTo)) {
-      warning("cannot create %s: %s", CRaCCheckpointTo, strerror(errno));
+      warning("cannot create %s: %s", CRaCCheckpointTo, os::strerror(errno));
       return false;
     }
     if (-1 == os::rmdir(CRaCCheckpointTo)) {
-      warning("cannot cleanup after check: %s", strerror(errno));
+      warning("cannot cleanup after check: %s", os::strerror(errno));
       // not fatal
     }
   }
@@ -399,7 +399,7 @@ Handle crac::checkpoint(jarray fd_arr, jobjectArray obj_arr, bool dry_run, jlong
   }
 
   if (-1 == os::mkdir(CRaCCheckpointTo) && errno != EEXIST) {
-    warning("cannot create %s: %s", CRaCCheckpointTo, strerror(errno));
+    warning("cannot create %s: %s", CRaCCheckpointTo, os::strerror(errno));
     return ret_cr(JVM_CHECKPOINT_NONE, Handle(), Handle(), Handle(), Handle(), THREAD);
   }
 
@@ -474,7 +474,7 @@ void crac::restore() {
     _crengine_args[1] = "restore";
     add_crengine_arg(CRaCRestoreFrom);
     os::execv(_crengine, _crengine_args);
-    warning("cannot execute \"%s restore ...\" (%s)", _crengine, strerror(errno));
+    warning("cannot execute \"%s restore ...\" (%s)", _crengine, os::strerror(errno));
   }
 }
 

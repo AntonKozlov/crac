@@ -55,6 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         test-name:
+          - 'jdk/crac'
           - 'jdk/tier1 part 1'
           - 'jdk/tier1 part 2'
           - 'jdk/tier1 part 3'
@@ -67,6 +68,9 @@ jobs:
           - 'lib-test/tier1'
 
         include:
+          - test-name: 'jdk/crac'
+            test-suite: 'test/jdk/jdk/crac/'
+
           - test-name: 'jdk/tier1 part 1'
             test-suite: 'test/jdk/:tier1_part1'
 
@@ -147,6 +151,41 @@ jobs:
           else
             echo "value=$PATH" >> $GITHUB_OUTPUT
           fi
+
+      - name: 'Get CRIU URL configuration'
+        id: criu_url
+        uses: ./.github/actions/config
+        with:
+          var: LINUX_X64_CRIU_URL
+        if: runner.os == 'Linux'
+
+      - name: 'Get CRIU SHA256 configuration'
+        id: criu_sha256
+        uses: ./.github/actions/config
+        with:
+          var: LINUX_X64_CRIU_SHA256
+        if: runner.os == 'Linux'
+
+      - name: Restore CRIU from cache
+        id: criu_cache
+        uses: actions/cache@v3
+        with:
+          path: ~/criu/criu
+          key: criu-${{ runner.os }}-${{ steps.criu_url.outputs.value }}
+        if: runner.os == 'Linux'
+
+      - name: Download CRIU
+        run: |
+          CRIU_URL=${{ steps.criu_url.outputs.value }}
+          CRIU_FILENAME=$(basename $CRIU_URL)
+          mkdir -p criu/
+          wget --progress=dot:mega -P criu/ $CRIU_URL
+          echo "${{ steps.criu_sha256.outputs.value }} criu/$CRIU_FILENAME" | sha256sum -c >/dev/null -
+          tar -xf criu/$CRIU_FILENAME -C criu
+          CRIU_BIN=$(find criu/ -type f -name criu)
+          mv $CRIU_BIN ${{ steps.bundles.outputs.jdk-path }}/lib/criu
+        shell: bash
+        if: runner.os == 'Linux' && steps.criu.outputs.cache-hit != 'true'
 
       - name: 'Run tests'
         id: run-tests

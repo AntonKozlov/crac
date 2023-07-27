@@ -169,15 +169,6 @@ class UnixFileDispatcherImpl extends FileDispatcher {
         return result;
     }
 
-    // Shared with SocketDispatcher and DatagramDispatcher but
-    // NOT used by FileDispatcherImpl
-    static void closeAndMark(FileDescriptor fd) throws IOException {
-        // Originally this used fdAccess.markClosed() and close0() but leaving
-        // the FD value set breaks JDKSocketResource (we don't want the extra
-        // test if the FD resource has been marked).
-        fdAccess.close(fd);
-    }
-
     // -- Native methods --
 
     static native int read0(FileDescriptor fd, long address, int len)
