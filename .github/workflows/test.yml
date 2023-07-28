@@ -125,12 +125,12 @@ jobs:
         id: jtreg
         uses: ./.github/actions/get-jtreg
 
-      - name: 'Get bundles'
-        id: bundles
-        uses: ./.github/actions/get-bundles
-        with:
-          platform: ${{ inputs.platform }}
-          debug-suffix: ${{ matrix.debug-suffix }}
+      #- name: 'Get bundles'
+        #id: bundles
+        #uses: ./.github/actions/get-bundles
+        #with:
+          #platform: ${{ inputs.platform }}
+          #debug-suffix: ${{ matrix.debug-suffix }}
 
       - name: 'Install dependencies'
         run: |
