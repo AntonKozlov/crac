@@ -68,8 +68,8 @@ jobs:
           #- 'lib-test/tier1'
 
         include:
-          - test-name: 'jdk/crac'
-            test-suite: 'test/jdk/jdk/crac/'
+          #- test-name: 'jdk/crac'
+            #test-suite: 'test/jdk/jdk/crac/'
 
           #- test-name: 'jdk/tier1 part 1'
             #test-suite: 'test/jdk/:tier1_part1'
@@ -152,48 +152,11 @@ jobs:
             echo "value=$PATH" >> $GITHUB_OUTPUT
           fi
 
-      - name: 'Get CRIU URL configuration'
-        id: criu_url
-        uses: ./.github/actions/config
+      - name: 'Setup CRIU'
+        uses: ./.github/actions/setup-criu
         with:
-          var: LINUX_X64_CRIU_URL
-        if: runner.os == 'Linux'
-
-      - name: 'Get CRIU SHA256 configuration'
-        id: criu_sha256
-        uses: ./.github/actions/config
-        with:
-          var: LINUX_X64_CRIU_SHA256
-        if: runner.os == 'Linux'
-
-      - name: Restore CRIU from cache
-        id: criu_cache
-        uses: actions/cache@v3
-        with:
-          path: ~/criu/criu
-          key: criu-${{ runner.os }}-${{ steps.criu_url.outputs.value }}
-        if: runner.os == 'Linux'
-
-      - name: Download CRIU
-        run: |
-          CRIU_URL=${{ steps.criu_url.outputs.value }}
-          CRIU_FILENAME=$(basename $CRIU_URL)
-          wget --progress=dot:mega $CRIU_URL
-          echo "${{ steps.criu_sha256.outputs.value }} $CRIU_FILENAME" | sha256sum -c >/dev/null -
-          mkdir -p criu/
-          tar -xf $CRIU_FILENAME -C criu
-          mv $(find criu/ -type f -name criu) criu/criu
-        shell: bash
-        if: runner.os == 'Linux' && steps.criu.outputs.cache-hit != 'true'
-
-      - name: Setup CRIU
-        run: |
-          JDK_CRIU=${{ steps.bundles.outputs.jdk-path }}/lib/criu
-          cp criu/criu $JDK_CRIU
-          sudo chown root:root $JDK_CRIU
-          sudo chmod u+s $JDK_CRIU
-        shell: bash
-        if: runner.os == 'Linux' && steps.criu.outputs.cache-hit != 'true'
+          jdk-path: ${{ steps.bundles.outputs.jdk-path }}
+        if: runner.os == 'Linux' && matrix.test-name == 'jdk/crac'
 
       - name: 'Run tests'
         id: run-tests
