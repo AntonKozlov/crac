@@ -155,8 +155,12 @@ jobs:
       - name: 'Setup CRIU'
         uses: ./.github/actions/setup-criu
         with:
-          jdk-path: ${{ steps.bundles.outputs.jdk-path }}
+          jdk-path: ${{ steps.bootjdk.outputs.jdk-path }}
         if: runner.os == 'Linux' && matrix.test-name == 'jdk/crac'
+
+      - name: TEST
+        run: |
+          ls -la ${{ steps.bootjdk.outputs.path }}/lib
 
       - name: 'Run tests'
         id: run-tests
