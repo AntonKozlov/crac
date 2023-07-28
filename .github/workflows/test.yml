@@ -68,8 +68,8 @@ jobs:
           #- 'lib-test/tier1'
 
         include:
-          #- test-name: 'jdk/crac'
-            #test-suite: 'test/jdk/jdk/crac/'
+          - test-name: 'jdk/crac'
+            test-suite: 'test/jdk/jdk/crac/'
 
           #- test-name: 'jdk/tier1 part 1'
             #test-suite: 'test/jdk/:tier1_part1'
