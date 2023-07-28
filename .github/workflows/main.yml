@@ -57,15 +57,15 @@ jobs:
     name: 'Select platforms'
     runs-on: ubuntu-22.04
     outputs:
-      linux-x64: false #${{ steps.include.outputs.linux-x64 }}
-      linux-x86: false #${{ steps.include.outputs.linux-x86 }}
-      linux-x64-variants: false #${{ steps.include.outputs.linux-x64-variants }}
-      linux-cross-compile: false #${{ steps.include.outputs.linux-cross-compile }}
-      macos-x64: false #${{ steps.include.outputs.macos-x64 }}
-      macos-aarch64: false #${{ steps.include.outputs.macos-aarch64 }}
-      windows-x64: false #${{ steps.include.outputs.windows-x64 }}
-      windows-aarch64: false #${{ steps.include.outputs.windows-aarch64 }}
-      docs: false #${{ steps.include.outputs.docs }}
+      linux-x64: ${{ steps.include.outputs.linux-x64 }}
+      linux-x86: ${{ steps.include.outputs.linux-x86 }}
+      linux-x64-variants: ${{ steps.include.outputs.linux-x64-variants }}
+      linux-cross-compile: ${{ steps.include.outputs.linux-cross-compile }}
+      macos-x64: ${{ steps.include.outputs.macos-x64 }}
+      macos-aarch64: ${{ steps.include.outputs.macos-aarch64 }}
+      windows-x64: ${{ steps.include.outputs.windows-x64 }}
+      windows-aarch64: ${{ steps.include.outputs.windows-aarch64 }}
+      docs: ${{ steps.include.outputs.docs }}
 
     steps:
         # This function must be inlined in main.yml, or we'd be forced to checkout the repo
@@ -301,8 +301,8 @@ jobs:
 
   test-linux-x64:
     name: linux-x64
-    #needs:
-      #- build-linux-x64
+    needs:
+      - build-linux-x64
     uses: ./.github/workflows/test.yml
     with:
       platform: linux-x64
